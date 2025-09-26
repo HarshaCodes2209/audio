@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Futuristic Red & Black Audio Player</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  body {
+    margin: 0;
+    height: 100vh;
+    background: linear-gradient(135deg, #0a0a0a, #220000); /* black to dark red gradient */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: 'Poppins', sans-serif;
+    overflow: hidden;
+  }
+
+  /* Glowing background animation */
+  .glow-bg {
+    position: absolute;
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(circle, #b22222 0%, transparent 70%);
+    filter: blur(100px);
+    animation: pulse 3s infinite alternate;
+    z-index: -1;
+  }
+
+  @keyframes pulse {
+    0% { transform: scale(0.8); opacity: 0.7; }
+    100% { transform: scale(1.2); opacity: 0.9; }
+  }
+
+  .player {
+    background: #1a1a1a;
+    border: 2px solid #b22222;
+    border-radius: 25px;
+    padding: 30px;
+    width: 400px;
+    max-width: 90%;
+    box-shadow: 0 0 25px rgba(178,34,34,0.8);
+    text-align: center;
+    position: relative;
+  }
+
+  .player h2 {
+    color: #ff0000;
+    margin-bottom: 25px;
+    text-shadow: 0 0 10px #ff0000, 0 0 20px #ff4500;
+  }
+
+  .play-btn {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: linear-gradient(145deg, #b22222, #ff0000);
+    border: none;
+    color: #fff;
+    font-size: 2.2rem;
+    cursor: pointer;
+    box-shadow: 0 0 15px #ff0000, 0 0 30px #b22222;
+    transition: all 0.3s ease;
+    outline: none;
+    position: relative;
+  }
+
+  .play-btn::after {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    box-shadow: 0 0 50px #ff0000;
+    top: 0; left: 0;
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+
+  .play-btn:hover::after {
+    opacity: 1;
+  }
+
+  .play-btn:hover {
+    transform: scale(1.15);
+  }
+
+  .progress-container {
+    width: 100%;
+    background: #333;
+    height: 12px;
+    border-radius: 10px;
+    margin: 25px 0;
+    cursor: pointer;
+    overflow: hidden;
+    box-shadow: 0 0 10px #ff0000 inset;
+    position: relative;
+  }
+
+  .progress {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, #ff0000, #b22222);
+    border-radius: 10px;
+    transition: width 0.1s linear;
+  }
+
+  .progress-container:hover .progress {
+    box-shadow: 0 0 15px #ff0000;
+  }
+
+  .time-container {
+    color: #ff0000;
+    font-weight: 600;
+    margin-bottom: 15px;
+    text-shadow: 0 0 5px #ff0000;
+  }
+
+  .volume-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 15px;
+  }
+
+  .volume-container label {
+    color: #ff0000;
+    font-size: 1.2rem;
+    margin-right: 10px;
+  }
+
+  .volume-slider {
+    width: 60%;
+    -webkit-appearance: none;
+    background: linear-gradient(to right, #b22222 100%, #333 0%);
+    height: 6px;
+    border-radius: 5px;
+    outline: none;
+    transition: background 0.2s ease;
+    position: relative;
+    top: -2px; /* fix thumb alignment */
+  }
+
+  /* Chrome & Edge */
+  .volume-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 18px;
+  height: 18px;
+  background: #ff0000;
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: 0 0 15px #ff0000;
+  transition: transform 0.2s;
+  margin-top: -6px; /* 🔥 this perfectly centers it */
+}
+
+
+  .volume-slider::-webkit-slider-thumb:hover {
+    transform: scale(1.2);
+  }
+
+  .volume-slider::-webkit-slider-runnable-track {
+    height: 6px;
+    border-radius: 5px;
+    background: linear-gradient(to right, #b22222 0%, #b22222 var(--value), #333 var(--value), #333 100%);
+  }
+
+  /* Firefox */
+  .volume-slider::-moz-range-track {
+    height: 6px;
+    border-radius: 5px;
+    background: #333;
+  }
+
+  .volume-slider::-moz-range-progress {
+    background: #b22222;
+    height: 6px;
+    border-radius: 5px;
+  }
+
+  .volume-slider::-moz-range-thumb {
+    background: #ff0000;
+    border: none;
+    border-radius: 50%;
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+  }
+</style>
+</head>
+<body>
+
+<div class="glow-bg"></div>
+
+<div class="player">
+  <h2>🔥 Audio Player</h2>
+  <audio id="audio" src="your-audio-file.mp3"></audio>
+
+  <button class="play-btn" id="playBtn">►</button>
+
+  <div class="progress-container" id="progressContainer">
+    <div class="progress" id="progress"></div>
+  </div>
+
+  <div class="time-container">
+    <span id="currentTime">00:00</span> / <span id="duration">00:00</span>
+  </div>
+
+  <div class="volume-container">
+    <label for="volume">🔊</label>
+    <input type="range" id="volume" class="volume-slider" min="0" max="1" step="0.01" value="1">
+  </div>
+</div>
+
+<script>
+const audio = document.getElementById('audio');
+const playBtn = document.getElementById('playBtn');
+const progress = document.getElementById('progress');
+const progressContainer = document.getElementById('progressContainer');
+const volumeSlider = document.getElementById('volume');
+const currentTimeEl = document.getElementById('currentTime');
+const durationEl = document.getElementById('duration');
+
+// Format seconds as mm:ss
+function formatTime(time) {
+  const minutes = Math.floor(time / 60);
+  const seconds = Math.floor(time % 60);
+  return `${minutes < 10 ? '0'+minutes : minutes}:${seconds < 10 ? '0'+seconds : seconds}`;
+}
+
+// Update duration
+audio.addEventListener('loadedmetadata', () => {
+  durationEl.textContent = formatTime(audio.duration);
+});
+
+// Play & Pause
+playBtn.addEventListener('click', () => {
+  if (audio.paused) {
+    audio.play();
+    playBtn.textContent = '❚❚';
+  } else {
+    audio.pause();
+    playBtn.textContent = '►';
+  }
+});
+
+// Update progress & time
+audio.addEventListener('timeupdate', () => {
+  const percent = (audio.currentTime / audio.duration) * 100;
+  progress.style.width = percent + '%';
+  currentTimeEl.textContent = formatTime(audio.currentTime);
+
+  // Update volume slider fill
+  volumeSlider.style.setProperty('--value', volumeSlider.value*100 + '%');
+});
+
+// Click to seek
+progressContainer.addEventListener('click', (e) => {
+  const width = progressContainer.clientWidth;
+  const clickX = e.offsetX;
+  audio.currentTime = (clickX / width) * audio.duration;
+});
+
+// Volume control
+volumeSlider.addEventListener('input', (e) => {
+  audio.volume = e.target.value;
+  volumeSlider.style.setProperty('--value', e.target.value*100 + '%');
+});
+</script>
+</body>
+</html>
